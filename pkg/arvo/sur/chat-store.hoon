@@ -11,7 +11,7 @@
 +$  envelope
   $:  uid=serial
       number=@
-      author=ship
+      =identity
       when=time
       =letter
   ==

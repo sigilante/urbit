@@ -94,17 +94,9 @@
       %dojo
       %modulo
       %launch
-      %publish
       %clock
       %weather
-      %group-store
-      %group-hook
-      %permission-store
-      %permission-group-hook
-      %chat-store
-      %chat-hook
-      %chat-view
-      %chat-cli
+      %graph-store
   ==
 ::
 ++  deft-fish                                           ::  default connects
