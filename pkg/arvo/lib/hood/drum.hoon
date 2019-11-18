@@ -108,6 +108,8 @@
       %chat-view
       %chat-cli
       %soto
+      %contact-store
+      %contact-view
   ==
 ::
 ++  deft-fish                                           ::  default connects
