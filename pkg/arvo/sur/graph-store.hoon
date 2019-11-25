@@ -1,6 +1,6 @@
 /-  *post
 |%
-+$  graphs  (map path graph)
++$  metagraph  (map path graph)
 ::
 +$  graph  (map ship subgraph)
 ::
@@ -8,8 +8,8 @@
 ::
 +$  graph-action
   $%  [%create =path]
-      [%graph =path =ship =subgraph]
-      [%post =path =post]
+      [%subgraph =path =ship =subgraph]
+      [%post =path =ship =post]
       [%delete =path]
       [%delete-subgraph =path =ship]
       [%delete-post =path =ship =uid]

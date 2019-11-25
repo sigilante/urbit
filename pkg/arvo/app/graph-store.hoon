@@ -62,23 +62,23 @@
   =/  graph  (~(get by metagraph) path.index)
   ?~  graph
     ~
-  =/  thread  (~(get by u.graph) uid.index)
-  ?~  thread
+  =/  subgraph  (~(get by u.graph) ship.index)
+  ?~  subgraph
     ~
-  [~ ~ %noun u.thread]
+  [~ ~ %noun u.subgraph]
 ::
 ++  peek-x-post
   |=  pax=path
   ^-  (unit (unit [%noun post]))
   ::  /:path/:ship/:uid
-  =/  index  (path-to-index pax)
+  =/  index  (path-to-index-uid pax)
   =/  graph  (~(get by metagraph) path.index)
-  ?~  graph
-    ~
-  =/  thread  (~(get by u.graph) uid.index)
-  ?~  thread
-    ~
-  [~ ~ %noun u.thread]
+  ?~  graph  ~
+  =/  subgraph  (~(get by u.graph) ship.index)
+  ?~  subgraph  ~
+  =/  post  (~(get by u.subgraph) uid.index)
+  ?~  post  ~
+  [~ ~ %noun u.post]
 ::
 ++  peer-keys
   |=  pax=path
@@ -130,12 +130,12 @@
   ^-  (quip move _this)
   ?>  (team:title our.bol src.bol)
   ?-  -.action
-      %create        (handle-create +.action)
-      %graph         (handle-graph +.action)
-      %post          (handle-post +.action)
-      %delete        (handle-delete +.action)
-      %delete-graph  (handle-delete-graph +.action)
-      %delete-post   (handle-delete-post +.action)
+      %create           (handle-create +.action)
+      %subgraph         (handle-subgraph +.action)
+      %post             (handle-post +.action)
+      %delete           (handle-delete +.action)
+      %delete-subgraph  (handle-delete-subgraph +.action)
+      %delete-post      (handle-delete-post +.action)
   ==
 ::
 ++  handle-create
@@ -146,56 +146,47 @@
   :-  (send-diff path *ship [%create path])
   this(metagraph (~(put by metagraph) path *graph))
 ::
-++  handle-graph
+++  handle-subgraph
   |=  [=path =ship =subgraph]
   ^-  (quip move _this)
-  ?.  (~(has by metagraph) path)
-    [~ this]
-  =/  graph  (~(got by metagraph) path)
-  ?:  (~(has by graph) ship)
-    [~ this]
+  =/  =graph  (~(got by metagraph) path)
+  ?<  (~(has by graph) ship)
   =.  graph  (~(put by graph) ship subgraph)
   :-  (send-diff path ship [%graph path ship subgraph])
   this(metagraph (~(put by metagraph) path graph))
 ::
 ++  handle-post
-  |=  [=path =post]
+  |=  [=path =ship =post]
   ^-  (quip move _this)
-  ?.  (~(has by metagraph) path)
-    [~ this]
   =/  =graph  (~(got by metagraph) path)
-  ?:  (~(has by graph) uid.post)
-    [~ this]
-  ::
-  :-  (send-diff path author.post uid.post [%post path post])
-  ?~  (~(has by graph) author.post)
-    =/  subgraph  (~(put by *subgraph) uid.post post)
-    =.  graph  (~(put by graph) author.post subgraph)
-    this(metagraph (~(put by metagraph) path graph))
-  ::
-  =/  subgraph  (~(got by graph) author.post)
+  =/  =subgraph  (~(got by graph) ship)
+  ?<  (~(has by graph) uid.post)
   =.  subgraph  (~(put by subgraph) uid.post post)
-  =.  graph  (~(put by graph) author.post subgraph)
+  :-  (send-diff path ship uid.post [%post path ship post])
   ?~  parent.post
-    this(metagraph (~(put by metagraph) path graph))
-  ::
+    =.  graph  (~(put by graph) ship post)
+    this(metagraph (~(put by metagraph) path graph)) 
   =/  parent-post  (~(get by subgraph) u.parent.post)
   ?~  parent-post
+    =.  graph  (~(put by graph) ship post)
     this(metagraph (~(put by metagraph) path graph))
   =.  children.u.parent-post  (snoc children.u.parent-post uid.post)
   =.  subgraph  (~(put by subgraph) uid.u.parent-post u.parent-post)
-  =.  graph  (~(put by graph) author.post subgraph)
+  =.  graph  (~(put by graph) ship subgraph)
   this(metagraph (~(put by metagraph) path graph))
 ::
 ++  handle-delete
   |=  =path
   ^-  (quip move _this)
-  ?.  (~(has by metagraph) path)
-    [~ this]
+  =/  graph  (~(get by metagraph) path)
+
   :_  this(metagraph (~(del by metagraph) path))
-  (send-diff path *ship [%delete path])
+  %-  zing
+  :~  (send-diff path *ship [%delete path])
+      (send-diff path ship [%delete-subgraph path ship])
+  ==
 ::
-++  handle-delete-graph
+++  handle-delete-subgraph
   |=  [=path =ship]
   ^-  (quip move _this)
   =/  graph  (~(get by metagraph) path)
@@ -204,7 +195,7 @@
   ?.  (~(has by u.graph) ship)
     [~ this]
   =.  u.graph  (~(del by u.graph) ship)
-  :-  (send-diff path ship [%delete-graph path ship])
+  :-  (send-diff path ship [%delete-subgraph path ship])
   this(metagraph (~(put by metagraph) path u.graph))
 ::
 ++  handle-delete-post

@@ -7,7 +7,7 @@
       =identity
       when=time
       =container
-      parent=(list uid)     ::  TODO: implement filters for 0/1 item in hook
+      parent=(unit uid)
       children=(list uid)
   ==
 ::
