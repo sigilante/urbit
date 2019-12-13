@@ -109,6 +109,7 @@
       %chat-cli
       %soto
       %contact-store
+      %contact-hook
       %contact-view
   ==
 ::
