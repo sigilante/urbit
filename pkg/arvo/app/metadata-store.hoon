@@ -21,8 +21,7 @@
 ::  /app-name/%app-name                            associations for app
 ::  /group/%group-path                             associations for group
 ::
-/-  *metadata-store
-/+  default-agent
+/+  *metadata-json, default-agent
 |%
 +$  card  card:agent:gall
 ::
